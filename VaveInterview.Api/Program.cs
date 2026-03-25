@@ -3,18 +3,17 @@ using VaveInterview.Core.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
+var blazorUrl = builder.Configuration.GetValue<string>("BlazorUrl", string.Empty);
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowBlazorUi", policy =>
     {
-        policy.WithOrigins("https://localhost:7270").AllowAnyHeader().AllowAnyMethod();
+        policy.WithOrigins(blazorUrl).AllowAnyHeader().AllowAnyMethod();
     });
 });
 
-// Add services to the container.
-
 builder.Services.AddControllers();
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+
 builder.Services.AddOpenApi();
 
 builder.Services.AddScoped<RoverService>();
@@ -23,7 +22,6 @@ var app = builder.Build();
 
 app.UseCors("AllowBlazorUi");
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();

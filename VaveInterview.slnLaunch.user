@@ -1,0 +1,15 @@
+[
+  {
+    "Name": "New Profile",
+    "Projects": [
+      {
+        "Path": "VaveInterview.Api\\VaveInterview.Api.csproj",
+        "Action": "Start"
+      },
+      {
+        "Path": "VaveInterview\\VaveInterview.csproj",
+        "Action": "Start"
+      }
+    ]
+  }
+]
