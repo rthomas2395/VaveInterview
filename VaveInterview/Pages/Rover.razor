@@ -1,0 +1,87 @@
+﻿@page "/rover"
+@using VaveInterview.Components
+@using VaveInterview.Core.Contracts
+@using VaveInterview.Core.Models.Enums
+@using VaveInterview.Core.Models.Records
+@using VaveInterview.Core.Services
+@using VaveInterview.Services
+
+@inject ApiService ApiService
+
+<PageTitle>Rover Controller</PageTitle>
+
+<h1>Rover Controller</h1>
+
+<div class="container-fluid">
+	<div class="row">
+		<div class="col-md-1">
+			<label for="numWidth" class="form-label">Grid Width</label>
+			<input type="number" min="1" max="10" class="form-control" id="numWidth" @bind="width">
+		</div>
+		<div class="col-md-1">
+			<label for="numHeight" class="form-label">Grid Height</label>
+			<input type="number" min="1" max="10" class="form-control" id="numHeight" @bind="height">
+		</div>
+		<div class="col-md-1">
+			<label for="numStartX" class="form-label">Start X</label>
+			<input type="number" min="1" max="10" class="form-control" id="numStartX" @bind="startPosition.X">
+		</div>
+		<div class="col-md-1">
+			<label for="numStartY" class="form-label">Start Y</label>
+			<input type="number" min="1" max="10" class="form-control" id="numStartY" @bind="startPosition.Y">
+		</div>
+		<div class="col-md-2">
+			<label for="cboStartingDirection" class="form-label">Starting Direction</label>
+			<select class="form-control" id="cboStartingDirection" @bind="direction">
+				<option value="North">North</option>
+				<option value="South">South</option>
+				<option value="East">East</option>
+				<option value="West">West</option>
+			</select>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-md-39">
+			<label for="txtCommand" class="form-label">Command</label>
+			<input type="text" class="form-control" id="txtCommand" @bind="commands">
+		</div>
+		<div class="col-md-3 mt-2">
+			<button class="btn btn-primary" @onclick="ExecuteCommandClick">Execute Command</button>
+		</div>
+	</div>
+</div>
+
+@if (result != null)
+{
+	<RoverGrid Width="width" Height="height" StartX="startPosition.X" StartY="startPosition.Y" EndX="result.Position.X" EndY="result?.Position.Y" Direction="direction" />
+}
+
+@result
+
+@code {
+	private int width = 10;
+	private int height = 10;
+	private Position startPosition = new(0, 0);
+	private Direction direction = Direction.North;
+
+	private string commands = string.Empty;
+
+	private RoverResult? result = null;
+
+	private async Task ExecuteCommandClick()
+	{
+		var request = new RoverRequestDto
+		{
+			Width = width,
+			Height = height,
+			StartX = startPosition.X,
+			StartY = startPosition.Y,
+			Direction = direction.ToString(),
+			Commands = commands
+		};
+
+		result = await ApiService.PostDataAsync(request);
+
+		StateHasChanged();
+	}
+}

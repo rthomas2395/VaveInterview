@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="VaveInterview.Api/VaveInterview.Api.csproj" Id="88ae0c76-1927-4d27-9f99-e1e6d282d93a" />
+  <Project Path="VaveInterview.Core/VaveInterview.Core.csproj" />
+  <Project Path="VaveInterview.UnitTests/VaveInterview.UnitTests.csproj" />
+  <Project Path="VaveInterview/VaveInterview.csproj" />
+</Solution>

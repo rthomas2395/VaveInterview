@@ -1,0 +1,42 @@
+﻿@using VaveInterview.Core.Models.Enums
+<div class="grid" style="--cols:@GridSize">
+
+	@for (int y = Height; y >= 0; y--)
+	{
+		@for (int x = 0; x <= Width; x++)
+		{
+			var isStart = (x == StartX && y == StartY);
+			var isEnd = EndX.HasValue && EndY.HasValue &&
+						x == EndX && y == EndY;
+
+			<div class="cell">
+				@if (isStart)
+				{
+					<div class="marker start @DirectionClass"></div>
+				}
+				else if (isEnd)
+				{
+					<div class="marker rover @DirectionClass"></div>
+				}
+			</div>
+		}
+	}
+
+</div>
+
+@code {
+	[Parameter] public int Width { get; set; }
+	[Parameter] public int Height { get; set; }
+
+	[Parameter] public int StartX { get; set; }
+	[Parameter] public int StartY { get; set; }
+
+	[Parameter] public int? EndX { get; set; }
+	[Parameter] public int? EndY { get; set; }
+
+	[Parameter] public Direction Direction { get; set; }
+
+	private int GridSize => Width + 1;
+
+	private string DirectionClass => Direction.ToString().ToLower();
+}
