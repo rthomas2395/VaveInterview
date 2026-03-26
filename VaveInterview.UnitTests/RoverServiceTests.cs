@@ -1,6 +1,6 @@
-﻿using VaveInterview.Core.Models.Enums;
+﻿using VaveInterview.Core.Models;
+using VaveInterview.Core.Models.Enums;
 using VaveInterview.Core.Models.Records;
-using VaveInterview.Core.Services;
 
 namespace VaveInterview.UnitTests
 {
@@ -11,13 +11,20 @@ namespace VaveInterview.UnitTests
         public void Execute_Valid()
         {
             //Arrange
-            var service = new RoverService();
+            var rover = new Rover
+            {
+                BoundaryHeight = 10,
+                BoundaryWidth = 10,
+                FacingDirection = Direction.North,
+                CurrentPosition = new Position(0, 0)
+            };
+
             var expectedPosition = new Position(7, 2);
             var expectedFinalDirection = Direction.North;
             var expectedFinalString = "True, N, (7, 2)";
 
             //Act
-            var result = service.Execute(10, 10, Direction.North, new Position(0, 0), "aAaRaAArALAAAAL");
+            var result = rover.Execute("aAaRaAArALAAAAL");
 
             //Assert
             Assert.IsTrue(result.IsValid);
@@ -30,13 +37,20 @@ namespace VaveInterview.UnitTests
         public void Execute_OutOfBounds()
         {
             //Arrange
-            var service = new RoverService();
+            var rover = new Rover
+            {
+                BoundaryHeight = 10,
+                BoundaryWidth = 10,
+                FacingDirection = Direction.North,
+                CurrentPosition = new Position(2, 3)
+            };
+
             var expectedPosition = new Position(-1, 5);
             var expectedFinalDirection = Direction.West;
             var expectedFinalString = "False, W, (-1, 5)";
 
             //Act
-            var result = service.Execute(10, 10, Direction.North, new Position(2, 3), "AALAAA");
+            var result = rover.Execute("AALAAA");
 
             //Assert
             Assert.IsFalse(result.IsValid);

@@ -15,4 +15,8 @@
     <ProjectReference Include="..\VaveInterview.Core\VaveInterview.Core.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="data\" />
+  </ItemGroup>
+
 </Project>

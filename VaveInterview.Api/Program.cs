@@ -1,5 +1,6 @@
 using Scalar.AspNetCore;
-using VaveInterview.Core.Services;
+using VaveInterview.Api.Services;
+using VaveInterview.Core.Converters;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -12,7 +13,10 @@ builder.Services.AddCors(options =>
     });
 });
 
-builder.Services.AddControllers();
+builder.Services.AddControllers().AddJsonOptions(options =>
+{
+    options.JsonSerializerOptions.Converters.Add(new PositionJsonConverter());
+});
 
 builder.Services.AddOpenApi();
 

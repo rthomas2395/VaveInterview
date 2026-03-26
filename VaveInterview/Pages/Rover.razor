@@ -3,7 +3,6 @@
 @using VaveInterview.Core.Contracts
 @using VaveInterview.Core.Models.Enums
 @using VaveInterview.Core.Models.Records
-@using VaveInterview.Core.Services
 @using VaveInterview.Services
 
 @inject ApiService ApiService
@@ -39,24 +38,34 @@
 				<option value="West">West</option>
 			</select>
 		</div>
+		<div class="col-md-2 my-auto">
+			<button class="btn btn-primary" @onclick="CreateRoverClick">Create New Rover</button>
+		</div>
+		<div class="col-md-2 my-auto">
+			@createdRoverId
+		</div>
 	</div>
-	<div class="row">
-		<div class="col-md-39">
+	<div class="row mt-2">
+		<div class="col-md-3">
+			<label for="txtCommand" class="form-label">Rover ID</label>
+			<input type="text" class="form-control" id="txtCommand" @bind="roverid">
+		</div>
+		<div class="col-md-3">
 			<label for="txtCommand" class="form-label">Command</label>
 			<input type="text" class="form-control" id="txtCommand" @bind="commands">
 		</div>
-		<div class="col-md-3 mt-2">
-			<button class="btn btn-primary" @onclick="ExecuteCommandClick">Execute Command</button>
+		<div class="col-md-3 my-auto">
+			<button class="btn btn-primary" @onclick="CommandRoverClick">Execute Command</button>
 		</div>
 	</div>
 </div>
 
 @if (result != null)
 {
-	<RoverGrid Width="width" Height="height" StartX="startPosition.X" StartY="startPosition.Y" EndX="result.Position.X" EndY="result?.Position.Y" Direction="direction" />
+	<RoverGrid Width="width" Height="height" StartX="result.StartingPosition.X" StartY="result.StartingPosition.Y" EndX="result.EndingPosition.X" EndY="result.EndingPosition.Y" Direction="direction" />
 }
 
-@result
+@result?.Description
 
 @code {
 	private int width = 10;
@@ -64,23 +73,40 @@
 	private Position startPosition = new(0, 0);
 	private Direction direction = Direction.North;
 
+	private string roverid = string.Empty;
 	private string commands = string.Empty;
 
-	private RoverResult? result = null;
+	private string createdRoverId = string.Empty;
+	private CommandRoverResponse? result = null;
 
-	private async Task ExecuteCommandClick()
+	private async Task CreateRoverClick()
 	{
-		var request = new RoverRequestDto
+		var request = new CreateRoverRequest
 		{
 			Width = width,
 			Height = height,
 			StartX = startPosition.X,
 			StartY = startPosition.Y,
-			Direction = direction.ToString(),
+			Direction = direction.ToString()
+		};
+
+		var result = await ApiService.CreateRoverAsync(request);
+
+		createdRoverId = result.Id.ToString();
+	}
+
+	private async Task CommandRoverClick()
+	{
+		if (!Guid.TryParse(roverid, out var roverGuid))
+			return;
+
+		var request = new CommandRoverRequest
+		{
+			RoverId = roverGuid,
 			Commands = commands
 		};
 
-		result = await ApiService.PostDataAsync(request);
+		result = await ApiService.CommandRoverAsync(request);
 
 		StateHasChanged();
 	}

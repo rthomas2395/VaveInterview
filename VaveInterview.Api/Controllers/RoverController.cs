@@ -1,8 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
+using VaveInterview.Api.Services;
+using VaveInterview.Core.Contracts;
 using VaveInterview.Core.Models.Enums;
 using VaveInterview.Core.Models.Records;
-using VaveInterview.Core.Services;
-using VaveInterview.Core.Contracts;
 
 namespace VaveInterview.Api.Controllers
 {
@@ -17,24 +17,61 @@ namespace VaveInterview.Api.Controllers
             _roverService = roverService;
         }
 
-        [HttpPost("execute")]
-        public ActionResult<RoverResponseDto> Execute([FromBody]RoverRequestDto request)
+        [HttpPost("create")]
+        public async Task<ActionResult<CreateRoverResponse>> CreateRover([FromBody] CreateRoverRequest request)
         {
             if (!Enum.TryParse<Direction>(request?.Direction, true, out var direction))
                 return BadRequest("Invalid direction. 'North', 'South', 'East' or 'West' are valid.");
 
             try
             {
-                var startPosition = new Position(request.StartX, request.StartY);
+                var startingPosition = new Position(request.StartX, request.StartY);
 
-                var result = _roverService.Execute(request.Width, request.Height, direction, startPosition, request.Commands);
+                //TODO: Validate the starting position is actually inside the grid.
 
-                var response = new RoverResponseDto
+                var roverId = await _roverService.CreateRoverAsync(request.Height, request.Width, startingPosition, direction);
+
+                var response = new CreateRoverResponse
+                {
+                    Id = roverId
+                };
+
+                return Ok(response);
+            }
+            catch (ArgumentException aex)
+            {
+                return BadRequest($"Invalid arguments. {aex.Message}");
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, $"An error occured. {ex.Message}");
+            }
+        }
+
+        //TODO: An endpoint for getting a rover, using a URL parameter.
+
+        [HttpPost("command")]
+        public async Task<ActionResult<CommandRoverResponse>> CommandRover([FromBody] CommandRoverRequest request)
+        {
+            try
+            {
+                var rover = await _roverService.GetRoverAsync(request.RoverId);
+
+                if (rover == null)
+                    return BadRequest($"Rover '{request.RoverId}' not found.");
+
+                var result = rover.Execute(request.Commands);
+
+                if (result.IsValid)
+                    await _roverService.UpdateRoverAsync(rover);
+
+                var response = new CommandRoverResponse
                 {
                     IsValid = result.IsValid,
-                    Direction = result.Direction.ToString(),
-                    X = result.Position.X,
-                    Y = result.Position.Y,
+                    Direction = result.Direction,
+                    StartingPosition = result.StartPosition,
+                    EndingPosition = result.EndPosition,
+                    Description = result.ToString()
                 };
 
                 return Ok(response);

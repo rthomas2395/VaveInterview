@@ -1,7 +1,7 @@
 @VaveInterview.Api_HostAddress = https://localhost:7000
 
-###Valid request, out of bounds.
-POST {{VaveInterview.Api_HostAddress}}/rover/execute
+###Create a rover.
+POST {{VaveInterview.Api_HostAddress}}/rover/create
 Content-Type: application/json
 Accept: application/json
 
@@ -10,37 +10,35 @@ Accept: application/json
   "height": 10,
   "startX": 0,
   "startY": 0,
-  "direction": "North",
-  "commands": "AALAARALA"
+  "direction": "North"
 }
 ###
 
-###Valid request, valid commands.
-POST {{VaveInterview.Api_HostAddress}}/rover/execute
+###Get a rover.
+GET {{VaveInterview.Api_HostAddress}}/rover/
+Content-Type: application/json
+Accept: application/json
+
+###
+
+###Command a rover - valid.
+POST {{VaveInterview.Api_HostAddress}}/rover/command
 Content-Type: application/json
 Accept: application/json
 
 {
-  "width": 10,
-  "height": 10,
-  "startX": 0,
-  "startY": 0,
-  "direction": "North",
-  "commands": "AARAALALA"
+  "roverId": "8ea5c1c6-55bc-488b-a1d3-153d727c4306",
+  "commands": "AAAARAA"
 }
 ###
 
-###Invalid enum value
-POST {{VaveInterview.Api_HostAddress}}/rover/execute
+###Command a rover - invalid.
+POST {{VaveInterview.Api_HostAddress}}/rover/command
 Content-Type: application/json
 Accept: application/json
 
 {
-  "width": 10,
-  "height": 10,
-  "startX": 0,
-  "startY": 0,
-  "direction": "N",
-  "commands": "AALAARALA"
+  "roverId": "8ea5c1c6-55bc-488b-a1d3-153d727c4306",
+  "commands": "AAAAAAAAAAAAAAAAAAAAAAAAAAA"
 }
 ###

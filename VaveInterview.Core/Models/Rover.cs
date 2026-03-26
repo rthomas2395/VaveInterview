@@ -1,46 +1,56 @@
 ﻿using VaveInterview.Core.Models.Enums;
 using VaveInterview.Core.Models.Records;
 
-namespace VaveInterview.Core.Services
+namespace VaveInterview.Core.Models
 {
-    public class RoverService
+    public class Rover
     {
-        public RoverResult Execute(int width, int height, Direction direction, Position position, string commands)
+        public Guid Id { get; set; }
+        public int BoundaryWidth { get; set; }
+        public int BoundaryHeight { get; set; }
+        public Direction FacingDirection { get; set; }
+        public Position CurrentPosition { get; set; } = new(0, 0);
+
+        public RoverResult Execute(string commands)
         {
             commands = commands.ToUpper();
 
             if (!IsValidCommand(commands))
-                return new RoverResult(false, direction, position);
+                return new RoverResult(false, FacingDirection, CurrentPosition, CurrentPosition);
+
+            var startPos = new Position(CurrentPosition.X, CurrentPosition.Y);
 
             foreach (var cmd in commands)
             {
                 switch (cmd)
                 {
                     case 'A':
-                        var result = MoveForward(position.X, position.Y, direction);
+                        var result = MoveForward(CurrentPosition.X, CurrentPosition.Y, FacingDirection);
 
-                        if (IsOutOfBounds(result, width, height))
-                            return new RoverResult(false, direction, result);
+                        if (IsOutOfBounds(result, BoundaryWidth, BoundaryHeight))
+                            return new RoverResult(false, FacingDirection, result, result);
 
-                        position = result;
+                        CurrentPosition = result;
                         break;
                     case 'L':
-                        direction = TurnLeft(direction);
+                        FacingDirection = TurnLeft(FacingDirection);
                         break;
                     case 'R':
-                        direction = TurnRight(direction);
+                        FacingDirection = TurnRight(FacingDirection);
                         break;
                     default:
                         break;
                 }
             }
 
-            return new RoverResult(true, direction, position);
+            return new RoverResult(true, FacingDirection, startPos, CurrentPosition);
         }
+
+        #region Private Methods
+        private bool IsOutOfBounds(Position p, int width, int height) => p.X < 0 || p.X > width || p.Y < 0 || p.Y > height;
 
         private bool IsValidCommand(string commands)
         {
-            //TODO: Should this be public, do we want to validate the command before execution? 
             //Could also do this using RegEx - would run a BenchmarkDotNet to see which is better in performance critical scenario.
             if (string.IsNullOrWhiteSpace(commands))
                 return false;
@@ -53,8 +63,7 @@ namespace VaveInterview.Core.Services
 
             return true;
         }
-
-        private bool IsOutOfBounds(Position p, int width, int height) => p.X < 0 || p.X > width || p.Y < 0 || p.Y > height;
+        #endregion
 
         #region Navigation Methods
         private Position MoveForward(int x, int y, Direction dir)

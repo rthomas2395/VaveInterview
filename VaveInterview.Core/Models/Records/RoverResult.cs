@@ -6,18 +6,20 @@ namespace VaveInterview.Core.Models.Records
     {
         public readonly bool IsValid;
         public readonly Direction Direction;
-        public readonly Position Position;
+        public readonly Position StartPosition;
+        public readonly Position EndPosition;
 
-        public RoverResult(bool isValid, Direction direction, Position position)
+        public RoverResult(bool isValid, Direction direction, Position startPosition, Position endPosition)
         {
             IsValid = isValid;
             Direction = direction;
-            Position = position;
+            StartPosition = startPosition;
+            EndPosition = endPosition;
         }
 
         public override string ToString()
         {
-            return $"{IsValid}, {Direction.ToString()[..1]}, {Position}";
+            return $"{IsValid}, {Direction.ToString()[..1]}, {EndPosition}";
         }
     }
 }

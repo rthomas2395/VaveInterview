@@ -4,11 +4,13 @@
     "Projects": [
       {
         "Path": "VaveInterview.Api\\VaveInterview.Api.csproj",
-        "Action": "Start"
+        "Action": "Start",
+        "DebugTarget": "https"
       },
       {
         "Path": "VaveInterview\\VaveInterview.csproj",
-        "Action": "Start"
+        "Action": "Start",
+        "DebugTarget": "https"
       }
     ]
   }
